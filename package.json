@@ -15,6 +15,8 @@
   "author": "puf17640",
   "license": "MIT",
   "dependencies": {
+    "discord.js-light": "3.2.10",
+    "dotenv": "8.2.0",
     "tinderjs": "git+https://github.com/puf17640/tinder.js.git"
   }
 }

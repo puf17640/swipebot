@@ -8,7 +8,19 @@ if (config.error) {
 }
 
 const tinder = new Tinder(process.env.AUTH_TOKEN),
-	queue = []
+	queue = [],
+	createEmbed = (opts, embed) => new Discord.MessageEmbed(embed)
+		.setTitle(opts.title || '')
+		.setAuthor(opts.author && opts.author.name || '', opts.author && opts.author.url || '')
+		.setDescription(opts.description || '')
+		.setThumbnail(opts.thumbnail)
+		.setColor(opts.color)
+		.attachFiles(opts.files || [])
+		.addFields(opts.fields || [])
+		.setImage(opts.image || '')
+		.setURL(opts.url || 'https://github.com/puf17640/swipebot')
+		.setTimestamp()
+		.setFooter(opts.footer || 'Check out the GitHub Repo by clicking the link.')
 
 const client = new Discord.Client({
 	presence: {
@@ -60,18 +72,47 @@ const client = new Discord.Client({
 
 const prefix = process.env.PREFIX || '.swipe'
 
-client.once('ready', () => console.log('[INFO]: bot is running'))
+client.once('ready', async () => {
+	console.log('[INFO]: bot is running')
+	queue.push(...(await tinder.getSwipes()))
+})
 
-client.on('message', message => {
+client.on('message', async message => {
 	if (message.author.bot) return;
-	message.content = message.content.toLowerCase().trim().replace(prefix, '')
+	message.content = message.content.toLowerCase().replace(prefix, '').trim()
 	try {
+		if (queue.length === 0) {
+			queue.push(...(await tinder.getSwipes()))
+		}
+		let swipe = queue.splice(0, 1)[0]
 		switch(message.content) {
 			case 'left':
-				await tinder.getSwipes()
+				await message.channel.send(createEmbed({
+					color: '#303136', 
+					title: swipe.name,
+					image: swipe.photos[0],
+					description: swipe.bio,
+					fields: [
+						{ name: 'Age', value: swipe.age, inline: true },	
+						{ name: 'Distance', value: `${swipe.distanceKm.toPrecision(4)} km`, inline: true },	
+						{ name: 'Gender', value: ['Male', 'Female', 'Other'][swipe.gender], inline: true },	
+						...swipe.teasers.map(teaser => ({ name: teaser.type[0].toUpperCase()+teaser.type.substr(1), value: teaser.string, inline: true }))
+					]
+				}))
 				break;
 			case 'right':
-
+				await message.channel.send(createEmbed({
+					color: '#303136', 
+					title: swipe.name,
+					image: swipe.photos[0],
+					description: swipe.bio,
+					fields: [
+						{ name: 'Age', value: swipe.age, inline: true },	
+						{ name: 'Distance', value: swipe.distanceKm, inline: true },	
+						{ name: 'Gender', value: ['Male', 'Female', 'Other'][swipe.gender], inline: true },	
+						...swipe.teasers.map(teaser => ({ name: teaser.type, value: teaser.string, inline: true }))
+					]
+				}))
 				break;
 		}
 	}catch(err){
