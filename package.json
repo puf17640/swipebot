@@ -7,7 +7,14 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node index.js"
   },
-  "keywords": ["discord", "bot", "tinder"],
+  "keywords": [
+    "discord",
+    "bot",
+    "tinder"
+  ],
   "author": "puf17640",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "tinderjs": "git+https://github.com/puf17640/tinder.js.git"
+  }
 }
