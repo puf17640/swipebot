@@ -1,0 +1,13 @@
+{
+  "name": "swipebot",
+  "version": "0.0.1",
+  "description": "tinder bot for discord",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": ["discord", "bot", "tinder"],
+  "author": "puf17640",
+  "license": "MIT"
+}
